@@ -1103,7 +1103,7 @@ def janela_estoque():
 
 def janela_formaspgmt():
     """
-        Abre uma nova janela para cadastrar produtos.
+        Abre uma nova janela para cadastrar as formas de pagamento.
     """
 
     formPagJnl = tk.Tk()
