@@ -1,4 +1,5 @@
 import mysql.connector
+from repositorys.CriarConexaoRepository import CriarConexaoRepository
 
 class VendasRepository:
     """
@@ -16,9 +17,12 @@ class VendasRepository:
 
         Args:
             valorTotal (float): Valor total da venda.
+
+        Returns:
+            None
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao =CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('insert into vendas(venda_valor_total) values ({});'.format(valorTotal))
@@ -38,7 +42,7 @@ class VendasRepository:
             list: Lista contendo as vendas.
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('select * from vendas;')

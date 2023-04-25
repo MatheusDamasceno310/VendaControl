@@ -1,4 +1,5 @@
 import mysql.connector
+from repositorys.CriarConexaoRepository import CriarConexaoRepository
 
 class RecebimentoRepository:
     """
@@ -17,9 +18,12 @@ class RecebimentoRepository:
         Args:
             idVenda (int): O código da venda que vai ter o recebimento.
             idFormPag (int): O código da forma de pagamento que vai ter o recebimento.
+
+        Returns:
+            None
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('insert into recebimentos(venda_fk_receb, formpag_fk_receb) values ({}, {});'.format(idVenda, idFormPag))
@@ -37,7 +41,7 @@ class RecebimentoRepository:
             list: Lista com todos os registros da tabela "recebimentos".
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('select * from recebimentos;')

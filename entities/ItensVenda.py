@@ -2,9 +2,26 @@ from repositorys.ProdutoRepository import ProdutoRepository
 from helpers.Avisos import Aviso
 
 class ItensVenda:
+    """
+    Representa os itens qua vão ser comprados.
+
+    Static method::
+        Adiciona um produto na lista de itens da venda, caso o código seja válido e a quantidade esteja disponível em estoque.
+    """
 
     @staticmethod
     def adicionar_produto(codigo, quantidade):
+        """
+        Adiciona um produto na lista de itens da venda, caso o código seja válido e a quantidade esteja disponível em estoque.
+
+        Args:
+            codigo (str): O código do produto a ser adicionado.
+            quantidade (str): quantidade do produto a ser adicionado.
+
+        Returns:
+            list ou None: Retorna uma lista com o id, código, nome, preço unitário, quantidade e preço total do produto adicionado, caso seja possível adicioná-lo.
+        """
+
         if codigo != '' and quantidade != '':
             try:
                 quantidade = int(quantidade)

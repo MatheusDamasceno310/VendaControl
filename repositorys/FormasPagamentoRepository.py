@@ -1,4 +1,5 @@
 import mysql.connector
+from repositorys.CriarConexaoRepository import CriarConexaoRepository
 
 class FormasPagamentoRepository:
     """
@@ -17,9 +18,12 @@ class FormasPagamentoRepository:
 
         Args:
             nomeFormPag (str): O nome da nova forma de pagamento.
+
+        Returns:
+            None
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('insert into formas_pagamento(formpag_nome) values ("{}");'.format(nomeFormPag))
@@ -35,9 +39,12 @@ class FormasPagamentoRepository:
 
         Args:
             id (int): O id da forma de pagamento a ser deletada.
+
+        Returns:
+            None
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('delete from formas_pagamento where formpag_id = {};'.format(id))
@@ -55,7 +62,7 @@ class FormasPagamentoRepository:
             formPagBanco (list): Uma lista contendo os registros de formas de pagamento.
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('select * from formas_pagamento;')

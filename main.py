@@ -37,6 +37,10 @@ labOpMenu.config(bg="#000013")
 labOpMenu.pack(expand=True)
 
 def janela_categorias():
+    """
+        Abre uma nova janela para cadastrar categorias.
+    """
+
     categoiasJnl = tk.Tk()
 
     largura_janela_categoiasJnl = 800
@@ -94,6 +98,10 @@ def janela_categorias():
         tabelaCategorias.insert('', 'end', values=("{}".format(id), "{}".format(nome), "{}".format(qntd)))
 
     def adc_categoria():
+        """
+            Cadastra uma nova categoria.
+        """
+
         valor = nomeCateg.get().strip()
         Categoria.cadastrar_categoria(valor.strip())
         try:
@@ -108,6 +116,10 @@ def janela_categorias():
             print("Erro ao atualizar a tabela: {}".format(erro))
 
     def del_categoria():
+        """
+            Deleta uma categoria que não tenha produtos.
+        """
+
         selected_items = tabelaCategorias.selection()
         for item in selected_items:
             values = tabelaCategorias.item(item, 'values')
@@ -131,6 +143,10 @@ def janela_categorias():
     btnDelCateg.pack(pady=10, padx=10, side=tk.LEFT)
 
     def voltar_pro_menu():
+        """
+            Volta para o menu do programa.
+        """
+
         root.deiconify()
         categoiasJnl.destroy()
 
@@ -146,6 +162,9 @@ def janela_categorias():
             break
 
 def janela_produtos():
+    """
+        Abre uma nova janela para cadastrar produtos.
+    """
     produtosJnl = tk.Tk()
 
     largura_janela_produtosJnl = 1200
@@ -223,6 +242,10 @@ def janela_produtos():
         tabelaProdutos.insert('', 'end', values=("{}".format(id), "{}".format(cod), "{}".format(nome), "{}".format(preco), "{}".format(qntd), "{}".format(nomeCategProd)))
 
     def adc_produto():
+        """
+            Cadastra um novo produto.
+        """
+
         codigo = inputCodProd.get().strip()
         nome = inputNomeProd.get().strip()
         preco = inputPrecoProd.get().strip()
@@ -251,6 +274,10 @@ def janela_produtos():
             print("Erro ao atualizar a tabela: {}".format(erro))
 
     def del_produto():
+        """
+            Deleta um produto que nunca tenha sido vendido.
+        """
+
         selected_items = tabelaProdutos.selection()
         for item in selected_items:
             values = tabelaProdutos.item(item, 'values')
@@ -329,6 +356,10 @@ def janela_produtos():
     btnDelProd.pack(pady=10, padx=10, side=tk.LEFT)
 
     def voltar_pro_menu():
+        """
+            Volta para o menu do programa.
+        """
+
         root.deiconify()
         produtosJnl.destroy()
 
@@ -344,6 +375,10 @@ def janela_produtos():
             break
 
 def janela_vendas():
+    """
+        Abre uma nova janela para gerenciar as compras dos clientes.
+    """
+
     vendasJnl = tk.Tk()
 
     largura_janela = 800
@@ -419,6 +454,10 @@ def janela_vendas():
     labRmvItem.pack(side=tk.LEFT)
 
     def remover_da_compra():
+        """
+            Remove um produto da lista de compra do cliente.
+        """
+
         valorTotal = 0.0
         selected_items = tabelaVenda.selection()
         for item in selected_items:
@@ -440,6 +479,10 @@ def janela_vendas():
     btnRemItem.pack(side=tk.LEFT, pady=10)
 
     def add_qntd_item():
+        """
+            Adiciona uma quantidade do produto na lista de compra do cliente.
+        """
+
         valorTotal = 0.0
         selected_items = tabelaVenda.selection()
         for item in selected_items:
@@ -461,6 +504,10 @@ def janela_vendas():
             inpValorTotal.insert(0, valorTotal)
 
     def rem_qntd_item():
+        """
+            Remove uma quantidade do produto ou o produto da lista de compra do cliente.
+        """
+
         valorTotal = 0.0
         selected_items = tabelaVenda.selection()
         for item in selected_items:
@@ -508,6 +555,10 @@ def janela_vendas():
     inpValorTotal.pack(side=tk.RIGHT)
 
     def adicionar_na_compra():
+        """
+            Adiciona os produtos do cliente na lista de compra dele.
+        """
+
         try:
             valorTotal = 0.0
             codigo = inputCodVend.get().strip()
@@ -550,6 +601,9 @@ def janela_vendas():
     '''
 
     def on_select2(event):
+        """
+            Passa o codigo do item na linha selecionada para um input.
+        """
         try:
             selected_items = tabelaBusca.selection()
             for item in selected_items:
@@ -579,6 +633,10 @@ def janela_vendas():
     tabelaBusca.heading('Categoria', text='Categoria')
 
     def buscar_codigo():
+        """
+            Busca um produto cadastrado pelo código dele.
+        """
+
         busca = inputBuscarProd.get().strip()
 
         try:
@@ -601,6 +659,10 @@ def janela_vendas():
             print("Erro ao atualizar a tabela: {}".format(erro))
 
     def buscar_nome():
+        """
+            Busca um produto cadastrado pelo nome dele.
+        """
+
         busca = inputBuscarProd.get().strip()
 
         try:
@@ -682,6 +744,10 @@ def janela_vendas():
     btnAdcCompra.pack(side=tk.LEFT, padx=30, pady=20)
 
     def pagamento_compra():
+        """
+            Abre uma nova janela para a finalização da compra.
+        """
+
         if inpValorTotal.get() != '':
             pgtoJnl = tk.Tk()
             largura_janela_pgtoJnl = 500
@@ -717,6 +783,10 @@ def janela_vendas():
             labVerTroco.pack(pady=20)
 
             def calcular_troco():
+                """
+                    Calcula qual o troco do cliente com base no dinheiro que ele deu.
+                """
+
                 try:
                     valorRecebido = inputRecb.get()
                     valorDaCompra = inpValorTotal.get()
@@ -767,6 +837,10 @@ def janela_vendas():
             inputTroco.pack()
 
             def finalizar_compra():
+                """
+                    Finaliza a compra e manda os dados da compra para a o banco de dados.
+                """
+
                 formaDePg = opFormPagCompra.get()
                 if formaDePg.strip() != '':
                     total = float(inpValorTotal.get())
@@ -805,6 +879,10 @@ def janela_vendas():
     vendasJnl.state('zoomed')
     vendasJnl.attributes('-fullscreen', False)
     def voltar_pro_menu():
+        """
+            Volta para o menu do programa.
+        """
+
         root.deiconify()
         vendasJnl.destroy()
 
@@ -820,6 +898,10 @@ def janela_vendas():
             break
 
 def janela_estoque():
+    """
+        Abre uma nova janela para adicionar e remover produtos em estoque.
+    """
+
     estoqueJnl = tk.Tk()
 
     largura_janela = 1200
@@ -856,6 +938,10 @@ def janela_estoque():
     '''
 
     def on_select(event):
+        """
+            Passa o código do item na linha selecionada para um input.
+        """
+
         selected_items = tabelaProdutos.selection()
         for item in selected_items:
             values = tabelaProdutos.item(item, 'values')
@@ -908,6 +994,10 @@ def janela_estoque():
     tabelaProdutos.bind("<ButtonRelease-1>", on_select)
 
     def adicionar_estoque():
+        """
+            Adiciona uma quantidade do produto no estoque.
+        """
+
         codigo = inputCodProd.get().strip()
         quantidade = inputQntdProd.get().strip()
         Produto.estoque("ADICIONAR", codigo, quantidade)
@@ -932,6 +1022,10 @@ def janela_estoque():
             print("Erro ao atualizar a tabela: {}".format(erro))
 
     def remover_estoque():
+        """
+            Remove uma quantidade do produto no estoque.
+        """
+
         codigo = inputCodProd.get().strip()
         quantidade = inputQntdProd.get().strip()
         Produto.estoque("REMOVER", codigo, quantidade)
@@ -988,6 +1082,10 @@ def janela_estoque():
     btnRmvProd.pack(pady=10, padx=10, side=tk.LEFT)
 
     def voltar_pro_menu():
+        """
+            Volta para o menu do programa.
+        """
+
         root.deiconify()
         estoqueJnl.destroy()
 
@@ -1004,6 +1102,10 @@ def janela_estoque():
 
 
 def janela_formaspgmt():
+    """
+        Abre uma nova janela para cadastrar produtos.
+    """
+
     formPagJnl = tk.Tk()
 
     largura_janela_formPagJnl = 800
@@ -1060,6 +1162,10 @@ def janela_formaspgmt():
         tabelaFormPag.insert('', 'end', values=("{}".format(id), "{}".format(nome)))
 
     def adc_formPag():
+        """
+            Cadastra uma forma de pagamento.
+        """
+
         valor = nomeFormPag.get().strip()
         FormasPagamento.cadastrar_forma(valor.strip())
         try:
@@ -1074,6 +1180,10 @@ def janela_formaspgmt():
             print("Erro ao atualizar a tabela: {}".format(erro))
 
     def del_formPag():
+        """
+            Deleta uma forma de pagamento.
+        """
+
         selected_items = tabelaFormPag.selection()
         for item in selected_items:
             values = tabelaFormPag.item(item, 'values')
@@ -1094,11 +1204,6 @@ def janela_formaspgmt():
             else:
                 Aviso.mostar_aviso("Erro ao excluir forma de pagamanto ")
 
-
-
-
-
-
     nomeFormPag = tk.Entry(labAdcFormPag)
     nomeFormPag.config(fg="#000013", font=("Arial", 18))
     nomeFormPag.pack(padx=10, side=tk.LEFT)
@@ -1112,6 +1217,10 @@ def janela_formaspgmt():
     btnDelFormPag.pack(pady=10, padx=10, side=tk.LEFT)
 
     def voltar_pro_menu():
+        """
+            Volta para o menu do programa.
+        """
+
         root.deiconify()
         formPagJnl.destroy()
 

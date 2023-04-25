@@ -1,4 +1,5 @@
 import mysql.connector
+from repositorys.CriarConexaoRepository import CriarConexaoRepository
 
 class ProdutoRepository:
     """
@@ -22,9 +23,12 @@ class ProdutoRepository:
             precoProduto (float): O preço do produto a ser adicionado.
             quantidadeProduto (int): A quantidade do produto a ser adicionado.
             categoriaProduto (int): O id da categoria do produto a ser adicionado.
+
+        Returns:
+            None
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('insert into produtos(prod_codigo_produto, prod_nome, prod_preco, prod_quantidade, categ_fk_prod) values ("{}", "{}", {}, {}, {});'.format(codigoProduto, nomeProduto, precoProduto, quantidadeProduto, categoriaProduto))
@@ -40,9 +44,12 @@ class ProdutoRepository:
 
         Args:
             id (int): O id do registro a ser deletado.
+
+        Returns:
+            None
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('delete from produtos where prod_id = {};'.format(id))
@@ -60,7 +67,7 @@ class ProdutoRepository:
             list: Lista com todos os registros da tabela "produtos".
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('select * from produtos;')
@@ -79,9 +86,12 @@ class ProdutoRepository:
         Args:
             id (int): O id do produto a ser atualizado.
             quantidade (int): A nova quantidade do produto.
+
+        Returns:
+            None
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('update produtos set prod_quantidade = {} where prod_id = {};'.format(quantidade, id))

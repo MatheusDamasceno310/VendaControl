@@ -1,4 +1,5 @@
 import mysql.connector
+from repositorys.CriarConexaoRepository import CriarConexaoRepository
 
 class CategoriaRepository:
     """
@@ -18,8 +19,11 @@ class CategoriaRepository:
         Args:
             nomeCategoria (str): O nome da categoria a ser adicionada.
             qntdCategoria (int): A quantidade de produtos que tem cadastrado nessa categoria.
+
+        Returns:
+            None
         """
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('insert into categorias(categ_nome, categ_quantidade) values ("{}", {});'.format(nomeCategoria, qntdCategoria))
@@ -35,9 +39,12 @@ class CategoriaRepository:
 
         Args:
             id (int): O id do registro a ser deletado.
+
+        Returns:
+            None
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('delete from categorias where categ_id = {};'.format(id))
@@ -55,7 +62,7 @@ class CategoriaRepository:
             list: Lista com todos os registros da tabela "categorias".
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('select * from categorias;')

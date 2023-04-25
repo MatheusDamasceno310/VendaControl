@@ -1,4 +1,5 @@
 import mysql.connector
+from repositorys.CriarConexaoRepository import CriarConexaoRepository
 
 class ItensVendaRepository:
     """
@@ -14,14 +15,17 @@ class ItensVendaRepository:
         """
         Cria um novo item de venda no banco de dados.
 
-        Parâmetros:
-        - idVenda: o id da venda relacionada ao item.
-        - idProduto: o id do produto relacionado ao item.
-        - qntdVenda: a quantidade de produtos vendidos no item.
-        - valorVenda: o valor total do item de venda.
+        Args:
+            idVenda (int): O id da venda relacionada ao item.
+            idProduto (int): O id do produto relacionado ao item.
+            qntdVenda (int): A quantidade de produtos vendidos no item.
+            valorVenda (float): O valor total do item de venda.
+
+        Returns:
+            None
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('insert into itens_venda(venda_fk_itvnd, prod_fk_itvnd, itvnd_qntd, itvnd_preco_total) values ({}, {}, {}, {});'.format(idVenda, idProduto, qntdVenda, valorVenda))
@@ -35,10 +39,11 @@ class ItensVendaRepository:
         """
         Lê e retorna todos os itens de venda do banco de dados.
 
-        Retorna: uma lista de tuplas, onde cada tupla representa um item de venda.
+        Returns:
+            list: Lista de tuplas, onde cada tupla representa um item de venda.
         """
 
-        conexao = mysql.connector.connect(host='localhost', user='root', password='9009', database='mercadinho_estoque')
+        conexao = CriarConexaoRepository.criar_conexao()
         cursor = conexao.cursor()
 
         cursor.execute('select * from itens_venda;')
