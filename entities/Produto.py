@@ -60,7 +60,7 @@ class Produto(Categoria):
         Setter para o código do produto.
 
         Args:
-            nomeCategoria (str): O novo código do produto.
+            codigoProduto (str): O novo código do produto.
 
         Returns:
             None
@@ -85,7 +85,7 @@ class Produto(Categoria):
         Setter para o nome do produto.
 
         Args:
-            nomeCategoria (str): O novo nome do produto.
+            nomeProduto (str): O novo nome do produto.
 
         Returns:
             None
