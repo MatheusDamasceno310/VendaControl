@@ -1,0 +1,73 @@
+create database mercadinho_estoque;
+
+use mercadinho_estoque;
+
+create table categorias(
+	categ_id int not null primary key auto_increment,
+    categ_nome varchar(50) not null,
+    categ_quantidade int
+);
+
+create table produtos(
+	prod_id int not null primary key auto_increment,
+    prod_codigo_produto varchar(20) unique,
+    prod_nome varchar(50) not null,
+    prod_preco float not null,
+    prod_quantidade int not null,
+    categ_fk_prod int,
+    foreign key (categ_fk_prod) references categorias (categ_id)
+);
+
+create table vendas(
+	venda_id int not null primary key auto_increment,
+    venda_data timestamp default current_timestamp,
+    venda_valor_total float
+);
+
+create table itens_venda(
+	itvnd_id int not null primary key auto_increment,
+    venda_fk_itvnd int,
+    foreign key (venda_fk_itvnd) references vendas (venda_id),
+    prod_fk_itvnd int,
+    foreign key (prod_fk_itvnd) references produtos (prod_id),
+    itvnd_qntd int,
+    itvnd_preco_total float
+);
+
+create table formas_pagamento(
+	formpag_id int not null primary key auto_increment,
+    formpag_nome varchar(50)
+);
+
+create table recebimentos(
+	receb_id int not null primary key auto_increment,
+    venda_fk_receb int,
+    foreign key (venda_fk_receb) references vendas (venda_id),
+    formpag_fk_receb int,
+    foreign key (formpag_fk_receb) references formas_pagamento (formpag_id)
+);
+
+create trigger Tgr_Categoria_Quantidade_Insert after insert
+on produtos
+for each row
+update categorias set categ_quantidade = categ_quantidade + 1
+where categ_id = new.categ_fk_prod;
+
+create trigger Tgr_Categoria_Quantidade_Retorno after delete
+on produtos
+for each row
+update categorias set categ_quantidade = categ_quantidade - 1
+where categ_id = old.categ_fk_prod;
+
+
+create trigger Tgr_Produtos_Estoque_Insert after insert
+on itens_venda
+for each row
+update produtos set prod_quantidade = prod_quantidade - new.itvnd_qntd
+where prod_id = new.prod_fk_itvnd;
+
+create trigger Tgr_Produtos_Estoque_Retorno after delete
+on itens_venda
+for each row
+update produtos set prod_quantidade = prod_quantidade + old.itvnd_qntd
+where prod_id = old.prod_fk_itvnd;
