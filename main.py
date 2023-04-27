@@ -16,7 +16,7 @@ from tkinter import ttk
 root = tk.Tk()
 
 largura_janela_root = 800
-altura_janela_root = 400
+altura_janela_root = 500
 
 largura_tela_root = root.winfo_screenwidth()
 altura_tela_root = root.winfo_screenheight()
@@ -214,7 +214,7 @@ def janela_produtos():
 
     tabelaProdutos.column(0, width=50)
     tabelaProdutos.column(1, width=100)
-    tabelaProdutos.column(2, width=190)
+    tabelaProdutos.column(2, width=220)
     tabelaProdutos.column(3, width=100)
     tabelaProdutos.column(4, width=100)
     tabelaProdutos.column(5, width=140)
@@ -374,6 +374,209 @@ def janela_produtos():
         except KeyboardInterrupt:
             break
 
+def janela_estoque():
+    """
+        Abre uma nova janela para adicionar e remover produtos em estoque.
+    """
+
+    estoqueJnl = tk.Tk()
+
+    largura_janela = 1200
+    altura_janela = 600
+
+    largura_tela = estoqueJnl.winfo_screenwidth()
+    altura_tela = estoqueJnl.winfo_screenheight()
+
+    pos_x = int(largura_tela / 2 - largura_janela / 2)
+    pos_y = int(altura_tela / 2 - altura_janela / 2)
+
+    estoqueJnl.geometry(f"{largura_janela}x{altura_janela}+{pos_x}+{pos_y}")
+    estoqueJnl.configure(bg="#2E4053")
+    estoqueJnl.title("Produtos")
+
+    framEstoque = tk.Frame(estoqueJnl)
+    framEstoque.config(bg="#000013", height=600, width=1200)
+    framEstoque.pack(fill=tk.BOTH, padx=15, pady=15, expand=True)
+
+    labEstoque = tk.Label(framEstoque)
+    labEstoque.config(bg="#000013")
+    labEstoque.pack(expand=True)
+
+    labEstoqueTitle = tk.Label(labEstoque, text='Estoque')
+    labEstoqueTitle.config(bg="#000013", fg="white", font=("Arial", 20))
+    labEstoqueTitle.pack(padx=3, pady=10)
+
+    labEstoq = tk.Label(labEstoque)
+    labEstoq.config(bg="#000013")
+    labEstoq.pack(expand=True)
+
+    '''
+        TABELA PRODUTOS
+    '''
+
+    def on_select(event):
+        """
+            Passa o código do item na linha selecionada para um input.
+        """
+
+        selected_items = tabelaProdutos.selection()
+        for item in selected_items:
+            values = tabelaProdutos.item(item, 'values')
+
+        inputCodProd.delete(0, 'end')
+        inputCodProd.insert(0, values[1])
+
+    labTabelaProd = tk.Label(labEstoq)
+    labTabelaProd.config(bg="#2E4053", width=40)
+    labTabelaProd.pack(side=tk.LEFT, expand=True, padx=20)
+
+    tabelaProdutos = ttk.Treeview(labTabelaProd, columns=('Id', 'Codigo','Nome', 'Preco', 'Quantidade', 'Categoria'), show='headings')
+
+    tabelaProdutos.heading('Id', text='Id')
+    tabelaProdutos.heading('Codigo', text='Código')
+    tabelaProdutos.heading('Nome', text='Nome')
+    tabelaProdutos.heading('Preco', text='Preço (R$)')
+    tabelaProdutos.heading('Quantidade', text='Quantidade')
+    tabelaProdutos.heading('Categoria', text='Categoria')
+
+    tabelaProdutos.column(0, width=50)
+    tabelaProdutos.column(1, width=100)
+    tabelaProdutos.column(2, width=220)
+    tabelaProdutos.column(3, width=100)
+    tabelaProdutos.column(4, width=100)
+    tabelaProdutos.column(5, width=140)
+
+    tabelaProdutos.config(height=20)
+    tabelaProdutos.pack()
+
+    '''
+        ESTOQUE DOS PRODUTOS
+    '''
+
+    labAdcEstoq = tk.Label(labEstoq)
+    labAdcEstoq.config(bg="#2E4053", fg="#ffffff", font=("Arial", 20), width=400)
+    labAdcEstoq.pack(side=tk.LEFT, pady=50)
+
+    produtoBanco = ProdutoRepository.read()
+    categoriaBanco = CategoriaRepository.read()
+    nomeCategProd = ''
+
+    for id, cod, nome, preco, qntd, categoria in produtoBanco:
+        for idCateg, nomeCateg, qntdCateg in categoriaBanco:
+            if categoria == idCateg:
+                nomeCategProd = nomeCateg
+
+        tabelaProdutos.insert('', 'end', values=("{}".format(id), "{}".format(cod), "{}".format(nome), "{}".format(preco), "{}".format(qntd), "{}".format(nomeCategProd)))
+
+    tabelaProdutos.bind("<ButtonRelease-1>", on_select)
+
+    def adicionar_estoque():
+        """
+            Adiciona uma quantidade do produto no estoque.
+        """
+
+        codigo = inputCodProd.get().strip()
+        quantidade = inputQntdProd.get().strip()
+        Produto.estoque("ADICIONAR", codigo, quantidade)
+
+        try:
+            tabelaProdutos.delete(*tabelaProdutos.get_children())
+            produtoBanco = ProdutoRepository.read()
+            categoriaBanco = CategoriaRepository.read()
+            nomeCategProd = ''
+
+            for id, cod, nome, preco, qntd, categoria in produtoBanco:
+                for idCateg, nomeCateg, qntdCateg in categoriaBanco:
+                    if categoria == idCateg:
+                        nomeCategProd = nomeCateg
+
+                tabelaProdutos.insert('', 'end', values=("{}".format(id), "{}".format(cod), "{}".format(nome), "{}".format(preco), "{}".format(qntd), "{}".format(nomeCategProd)))
+
+            inputCodProd.delete(0, 'end')
+            inputQntdProd.delete(0, 'end')
+
+        except tk.TclError as erro:
+            print("Erro ao atualizar a tabela: {}".format(erro))
+
+    def remover_estoque():
+        """
+            Remove uma quantidade do produto no estoque.
+        """
+
+        codigo = inputCodProd.get().strip()
+        quantidade = inputQntdProd.get().strip()
+        Produto.estoque("REMOVER", codigo, quantidade)
+
+        try:
+            tabelaProdutos.delete(*tabelaProdutos.get_children())
+            produtoBanco = ProdutoRepository.read()
+            categoriaBanco = CategoriaRepository.read()
+            nomeCategProd = ''
+
+            for id, cod, nome, preco, qntd, categoria in produtoBanco:
+                for idCateg, nomeCateg, qntdCateg in categoriaBanco:
+                    if categoria == idCateg:
+                        nomeCategProd = nomeCateg
+
+                tabelaProdutos.insert('', 'end', values=(
+                "{}".format(id), "{}".format(cod), "{}".format(nome), "{}".format(preco), "{}".format(qntd),
+                "{}".format(nomeCategProd)))
+
+            inputCodProd.delete(0, 'end')
+            inputQntdProd.delete(0, 'end')
+
+        except tk.TclError as erro:
+            print("Erro ao atualizar a tabela: {}".format(erro))
+
+    labCodProd = tk.Label(labAdcEstoq)
+    labCodProd.configure(bg="#2E4053")
+    labCodProd.pack(padx=10, pady=6)
+    codProd = tk.Label(labCodProd, text="Código do Produto:")
+    codProd.config(bg="#2E4053", fg="#ffffff", font=("Arial", 12))
+    codProd.pack(padx=10, anchor=tk.W)
+    inputCodProd = tk.Entry(labCodProd)
+    inputCodProd.config(fg="#000013", font=("Arial", 16))
+    inputCodProd.pack(padx=10)
+
+    labQntdProd = tk.Label(labAdcEstoq)
+    labQntdProd.configure(bg="#2E4053")
+    labQntdProd.pack(padx=10, pady=6)
+    qntdProd = tk.Label(labQntdProd, text="Quantidade:")
+    qntdProd.config(bg="#2E4053", fg="#ffffff", font=("Arial", 12))
+    qntdProd.pack(padx=10, anchor=tk.W)
+    inputQntdProd = tk.Entry(labQntdProd)
+    inputQntdProd.config(fg="#000013", font=("Arial", 16))
+    inputQntdProd.pack(padx=10)
+
+    labBtnsProd = tk.Label(labAdcEstoq)
+    labBtnsProd.configure(bg="#2E4053")
+    labBtnsProd.pack(padx=10, pady=6)
+    btnAddProd = tk.Button(labBtnsProd, text="Adicionar", command=adicionar_estoque)
+    btnAddProd.config(cursor="hand2", font=("Arial", 12))
+    btnAddProd.pack(pady=10, side=tk.LEFT)
+    btnRmvProd = tk.Button(labBtnsProd, text="Remover", command=remover_estoque)
+    btnRmvProd.config(cursor="hand2", font=("Arial", 12))
+    btnRmvProd.pack(pady=10, padx=10, side=tk.LEFT)
+
+    def voltar_pro_menu():
+        """
+            Volta para o menu do programa.
+        """
+
+        root.deiconify()
+        estoqueJnl.destroy()
+
+    btnVoltarMenu = tk.Button(labEstoque, text='Sair', command=voltar_pro_menu)
+    btnVoltarMenu.config(cursor="hand2", height=1, width=7, font=("Arial", 14))
+    btnVoltarMenu.pack(fill=tk.BOTH, side=tk.BOTTOM, anchor=tk.S, pady=20, padx=20)
+
+    root.withdraw()
+    while True:
+        try:
+            estoqueJnl.mainloop()
+        except KeyboardInterrupt:
+            break
+
 def janela_vendas():
     """
         Abre uma nova janela para gerenciar as compras dos clientes.
@@ -441,7 +644,7 @@ def janela_vendas():
 
     tabelaVenda.column(0, width=50)
     tabelaVenda.column(1, width=100)
-    tabelaVenda.column(2, width=190)
+    tabelaVenda.column(2, width=220)
     tabelaVenda.column(3, width=100)
     tabelaVenda.column(4, width=100)
     tabelaVenda.column(5, width=100)
@@ -563,7 +766,7 @@ def janela_vendas():
             valorTotal = 0.0
             codigo = inputCodVend.get().strip()
             quantidade = inputQntdVend.get().strip()
-            lista = ItensVenda.adicionar_produto(codigo, quantidade)
+            lista = ItensVenda.adicionar_produto(codigo, quantidade, itensVenda)
             produtoNovo = "YES"
 
             if len(itensVenda) > 0 and len(lista) > 0:
@@ -897,210 +1100,6 @@ def janela_vendas():
         except KeyboardInterrupt:
             break
 
-def janela_estoque():
-    """
-        Abre uma nova janela para adicionar e remover produtos em estoque.
-    """
-
-    estoqueJnl = tk.Tk()
-
-    largura_janela = 1200
-    altura_janela = 600
-
-    largura_tela = estoqueJnl.winfo_screenwidth()
-    altura_tela = estoqueJnl.winfo_screenheight()
-
-    pos_x = int(largura_tela / 2 - largura_janela / 2)
-    pos_y = int(altura_tela / 2 - altura_janela / 2)
-
-    estoqueJnl.geometry(f"{largura_janela}x{altura_janela}+{pos_x}+{pos_y}")
-    estoqueJnl.configure(bg="#2E4053")
-    estoqueJnl.title("Produtos")
-
-    framEstoque = tk.Frame(estoqueJnl)
-    framEstoque.config(bg="#000013", height=600, width=1200)
-    framEstoque.pack(fill=tk.BOTH, padx=15, pady=15, expand=True)
-
-    labEstoque = tk.Label(framEstoque)
-    labEstoque.config(bg="#000013")
-    labEstoque.pack(expand=True)
-
-    labEstoqueTitle = tk.Label(labEstoque, text='Estoque')
-    labEstoqueTitle.config(bg="#000013", fg="white", font=("Arial", 20))
-    labEstoqueTitle.pack(padx=3, pady=10)
-
-    labEstoq = tk.Label(labEstoque)
-    labEstoq.config(bg="#000013")
-    labEstoq.pack(expand=True)
-
-    '''
-        TABELA PRODUTOS
-    '''
-
-    def on_select(event):
-        """
-            Passa o código do item na linha selecionada para um input.
-        """
-
-        selected_items = tabelaProdutos.selection()
-        for item in selected_items:
-            values = tabelaProdutos.item(item, 'values')
-
-        inputCodProd.delete(0, 'end')
-        inputCodProd.insert(0, values[1])
-
-    labTabelaProd = tk.Label(labEstoq)
-    labTabelaProd.config(bg="#2E4053", width=40)
-    labTabelaProd.pack(side=tk.LEFT, expand=True, padx=20)
-
-    tabelaProdutos = ttk.Treeview(labTabelaProd, columns=('Id', 'Codigo','Nome', 'Preco', 'Quantidade', 'Categoria'), show='headings')
-
-    tabelaProdutos.heading('Id', text='Id')
-    tabelaProdutos.heading('Codigo', text='Código')
-    tabelaProdutos.heading('Nome', text='Nome')
-    tabelaProdutos.heading('Preco', text='Preço (R$)')
-    tabelaProdutos.heading('Quantidade', text='Quantidade')
-    tabelaProdutos.heading('Categoria', text='Categoria')
-
-    tabelaProdutos.column(0, width=50)
-    tabelaProdutos.column(1, width=100)
-    tabelaProdutos.column(2, width=190)
-    tabelaProdutos.column(3, width=100)
-    tabelaProdutos.column(4, width=100)
-    tabelaProdutos.column(5, width=140)
-
-    tabelaProdutos.config(height=20)
-    tabelaProdutos.pack()
-
-    '''
-        ESTOQUE DOS PRODUTOS
-    '''
-
-    labAdcEstoq = tk.Label(labEstoq)
-    labAdcEstoq.config(bg="#2E4053", fg="#ffffff", font=("Arial", 20), width=400)
-    labAdcEstoq.pack(side=tk.LEFT, pady=50)
-
-    produtoBanco = ProdutoRepository.read()
-    categoriaBanco = CategoriaRepository.read()
-    nomeCategProd = ''
-
-    for id, cod, nome, preco, qntd, categoria in produtoBanco:
-        for idCateg, nomeCateg, qntdCateg in categoriaBanco:
-            if categoria == idCateg:
-                nomeCategProd = nomeCateg
-
-        tabelaProdutos.insert('', 'end', values=("{}".format(id), "{}".format(cod), "{}".format(nome), "{}".format(preco), "{}".format(qntd), "{}".format(nomeCategProd)))
-
-    tabelaProdutos.bind("<ButtonRelease-1>", on_select)
-
-    def adicionar_estoque():
-        """
-            Adiciona uma quantidade do produto no estoque.
-        """
-
-        codigo = inputCodProd.get().strip()
-        quantidade = inputQntdProd.get().strip()
-        Produto.estoque("ADICIONAR", codigo, quantidade)
-
-        try:
-            tabelaProdutos.delete(*tabelaProdutos.get_children())
-            produtoBanco = ProdutoRepository.read()
-            categoriaBanco = CategoriaRepository.read()
-            nomeCategProd = ''
-
-            for id, cod, nome, preco, qntd, categoria in produtoBanco:
-                for idCateg, nomeCateg, qntdCateg in categoriaBanco:
-                    if categoria == idCateg:
-                        nomeCategProd = nomeCateg
-
-                tabelaProdutos.insert('', 'end', values=("{}".format(id), "{}".format(cod), "{}".format(nome), "{}".format(preco), "{}".format(qntd), "{}".format(nomeCategProd)))
-
-            inputCodProd.delete(0, 'end')
-            inputQntdProd.delete(0, 'end')
-
-        except tk.TclError as erro:
-            print("Erro ao atualizar a tabela: {}".format(erro))
-
-    def remover_estoque():
-        """
-            Remove uma quantidade do produto no estoque.
-        """
-
-        codigo = inputCodProd.get().strip()
-        quantidade = inputQntdProd.get().strip()
-        Produto.estoque("REMOVER", codigo, quantidade)
-
-        try:
-            tabelaProdutos.delete(*tabelaProdutos.get_children())
-            produtoBanco = ProdutoRepository.read()
-            categoriaBanco = CategoriaRepository.read()
-            nomeCategProd = ''
-
-            for id, cod, nome, preco, qntd, categoria in produtoBanco:
-                for idCateg, nomeCateg, qntdCateg in categoriaBanco:
-                    if categoria == idCateg:
-                        nomeCategProd = nomeCateg
-
-                tabelaProdutos.insert('', 'end', values=(
-                "{}".format(id), "{}".format(cod), "{}".format(nome), "{}".format(preco), "{}".format(qntd),
-                "{}".format(nomeCategProd)))
-
-            inputCodProd.delete(0, 'end')
-            inputQntdProd.delete(0, 'end')
-
-        except tk.TclError as erro:
-            print("Erro ao atualizar a tabela: {}".format(erro))
-
-    labCodProd = tk.Label(labAdcEstoq)
-    labCodProd.configure(bg="#2E4053")
-    labCodProd.pack(padx=10, pady=6)
-    codProd = tk.Label(labCodProd, text="Código do Produto:")
-    codProd.config(bg="#2E4053", fg="#ffffff", font=("Arial", 12))
-    codProd.pack(padx=10, anchor=tk.W)
-    inputCodProd = tk.Entry(labCodProd)
-    inputCodProd.config(fg="#000013", font=("Arial", 16))
-    inputCodProd.pack(padx=10)
-
-    labQntdProd = tk.Label(labAdcEstoq)
-    labQntdProd.configure(bg="#2E4053")
-    labQntdProd.pack(padx=10, pady=6)
-    qntdProd = tk.Label(labQntdProd, text="Quantidade:")
-    qntdProd.config(bg="#2E4053", fg="#ffffff", font=("Arial", 12))
-    qntdProd.pack(padx=10, anchor=tk.W)
-    inputQntdProd = tk.Entry(labQntdProd)
-    inputQntdProd.config(fg="#000013", font=("Arial", 16))
-    inputQntdProd.pack(padx=10)
-
-    labBtnsProd = tk.Label(labAdcEstoq)
-    labBtnsProd.configure(bg="#2E4053")
-    labBtnsProd.pack(padx=10, pady=6)
-    btnAddProd = tk.Button(labBtnsProd, text="Adicionar", command=adicionar_estoque)
-    btnAddProd.config(cursor="hand2", font=("Arial", 12))
-    btnAddProd.pack(pady=10, side=tk.LEFT)
-    btnRmvProd = tk.Button(labBtnsProd, text="Remover", command=remover_estoque)
-    btnRmvProd.config(cursor="hand2", font=("Arial", 12))
-    btnRmvProd.pack(pady=10, padx=10, side=tk.LEFT)
-
-    def voltar_pro_menu():
-        """
-            Volta para o menu do programa.
-        """
-
-        root.deiconify()
-        estoqueJnl.destroy()
-
-    btnVoltarMenu = tk.Button(labEstoque, text='Sair', command=voltar_pro_menu)
-    btnVoltarMenu.config(cursor="hand2", height=1, width=7, font=("Arial", 14))
-    btnVoltarMenu.pack(fill=tk.BOTH, side=tk.BOTTOM, anchor=tk.S, pady=20, padx=20)
-
-    root.withdraw()
-    while True:
-        try:
-            estoqueJnl.mainloop()
-        except KeyboardInterrupt:
-            break
-
-
 def janela_formaspgmt():
     """
         Abre uma nova janela para cadastrar as formas de pagamento.
@@ -1243,21 +1242,21 @@ labelOPTitle = tk.Label(labOpMenu, text='MENU')
 labelOPTitle.config(bg="#000013", fg="white", font=("Arial", 20))
 labelOPTitle.pack(padx=3, expand=True)
 
-btnOPProd = tk.Button(labOpMenu, text='Categorias', command=janela_categorias)
+btnOPCateg = tk.Button(labOpMenu, text='Categorias', command=janela_categorias)
+btnOPCateg.config(cursor="hand2", font=("Arial", 15), height=1, width=60)
+btnOPCateg.pack(pady=10)
+
+btnOPProd = tk.Button(labOpMenu, text='Produtos', command=janela_produtos)
 btnOPProd.config(cursor="hand2", font=("Arial", 15), height=1, width=60)
 btnOPProd.pack(pady=10)
-
-btnOPVend = tk.Button(labOpMenu, text='Produtos', command=janela_produtos)
-btnOPVend.config(cursor="hand2", font=("Arial", 15), height=1, width=60)
-btnOPVend.pack(pady=10)
-
-btnOPRegi = tk.Button(labOpMenu, text='Vendas', command=janela_vendas)
-btnOPRegi.config(cursor="hand2", font=("Arial", 15), height=1, width=60)
-btnOPRegi.pack(pady=10)
 
 btnOPEstq = tk.Button(labOpMenu, text='Estoque', command=janela_estoque)
 btnOPEstq.config(cursor="hand2", font=("Arial", 15), height=1, width=60)
 btnOPEstq.pack(pady=10)
+
+btnOPVend = tk.Button(labOpMenu, text='Vendas', command=janela_vendas)
+btnOPVend.config(cursor="hand2", font=("Arial", 15), height=1, width=60)
+btnOPVend.pack(pady=10)
 
 btnOPFag = tk.Button(labOpMenu, text='Formas de Pagamento', command=janela_formaspgmt)
 btnOPFag.config(cursor="hand2", font=("Arial", 15), height=1, width=60)

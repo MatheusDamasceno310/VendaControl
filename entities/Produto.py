@@ -178,7 +178,11 @@ class Produto(Categoria):
                             idCateProd = id
 
                     if idCateProd != 'NO':
-                        ProdutoRepository.create(prod.codigo_produto, prod.nome_produto, prod.preco_produto, prod.quantidade_estoque, idCateProd)
+                        if prod.codigo_produto.isnumeric() == True:
+                            ProdutoRepository.create(prod.codigo_produto, prod.nome_produto, prod.preco_produto, prod.quantidade_estoque, idCateProd)
+
+                        else:
+                            Aviso.mostar_aviso("O código deve conter só números!")
 
                     else:
                         Aviso.mostar_aviso("Categoria não cadastrada!")
