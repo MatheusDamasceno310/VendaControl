@@ -34,19 +34,8 @@ class ItensVenda:
                     for id, cod, nome, preco, qntd, categoria in produtoBanco:
                         if cod == codigo:
                             if quantidade <= qntd and quantidade > 0:
-                                if len(itensVenda) > 0:
-                                    for itens in itensVenda:
-                                        if itens[1] == codigo:
-                                            somaCompra = quantidade + int(itens[4])
-                                            qntdProd = qntd - somaCompra
-                                            if qntdProd >= 0:
-                                                codigoValido = [id, cod, nome, preco, quantidade, preco * quantidade]
-                                                quantidadeValida = "YES"
-
-                                else:
-                                    codigoValido = [id, cod, nome, preco, quantidade, preco * quantidade]
-                                    quantidadeValida = "YES"
-
+                                codigoValido = [id, cod, nome, preco, quantidade, preco * quantidade]
+                                quantidadeValida = "YES"
 
                     if quantidadeValida == "YES":
                         if codigoValido != 'NO':

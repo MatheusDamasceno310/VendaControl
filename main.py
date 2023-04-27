@@ -214,10 +214,10 @@ def janela_produtos():
 
     tabelaProdutos.column(0, width=50)
     tabelaProdutos.column(1, width=100)
-    tabelaProdutos.column(2, width=220)
+    tabelaProdutos.column(2, width=260)
     tabelaProdutos.column(3, width=100)
     tabelaProdutos.column(4, width=100)
-    tabelaProdutos.column(5, width=140)
+    tabelaProdutos.column(5, width=160)
 
     tabelaProdutos.config(height=20)
     tabelaProdutos.pack()
@@ -419,12 +419,16 @@ def janela_estoque():
             Passa o código do item na linha selecionada para um input.
         """
 
-        selected_items = tabelaProdutos.selection()
-        for item in selected_items:
-            values = tabelaProdutos.item(item, 'values')
+        try:
+            selected_items = tabelaProdutos.selection()
+            for item in selected_items:
+                values = tabelaProdutos.item(item, 'values')
 
-        inputCodProd.delete(0, 'end')
-        inputCodProd.insert(0, values[1])
+            inputCodProd.delete(0, 'end')
+            inputCodProd.insert(0, values[1])
+
+        except Exception as erro:
+            print(erro)
 
     labTabelaProd = tk.Label(labEstoq)
     labTabelaProd.config(bg="#2E4053", width=40)
@@ -441,10 +445,10 @@ def janela_estoque():
 
     tabelaProdutos.column(0, width=50)
     tabelaProdutos.column(1, width=100)
-    tabelaProdutos.column(2, width=220)
+    tabelaProdutos.column(2, width=260)
     tabelaProdutos.column(3, width=100)
     tabelaProdutos.column(4, width=100)
-    tabelaProdutos.column(5, width=140)
+    tabelaProdutos.column(5, width=160)
 
     tabelaProdutos.config(height=20)
     tabelaProdutos.pack()
@@ -609,6 +613,8 @@ def janela_vendas():
     labVend.config(bg="#000013")
     labVend.pack(expand=True)
 
+    produtoBanco = ProdutoRepository.read()
+
     '''
         VENDA
     '''
@@ -644,7 +650,7 @@ def janela_vendas():
 
     tabelaVenda.column(0, width=50)
     tabelaVenda.column(1, width=100)
-    tabelaVenda.column(2, width=220)
+    tabelaVenda.column(2, width=260)
     tabelaVenda.column(3, width=100)
     tabelaVenda.column(4, width=100)
     tabelaVenda.column(5, width=100)
@@ -691,20 +697,35 @@ def janela_vendas():
         for item in selected_items:
             values = tabelaVenda.item(item, 'values')
             valores = list(values)
-            for itens in itensVenda:
-                if itens[0] == int(valores[0]):
-                    itens[4] += 1
-                    itens[5] += float(valores[3])
 
-            valores[4] = int(valores[4]) + 1
-            valores[5] = float(valores[5]) + float(valores[3])
-            tabelaVenda.item(selected_items, values=(valores[0], valores[1], valores[2], valores[3], valores[4], valores[5]))
+            aumentoValido = 'NO'
+            for i, produtos in enumerate(produtoBanco):
+                produtos = list(produtos)
+                if produtos[1] == valores[1]:
+                    reducao = produtos[4] - 1
+                    if reducao >= 0:
+                        produtos[4] -= 1
+                        produtoBanco[i] = tuple(produtos)
+                        aumentoValido = 'YES'
 
-            for itens in itensVenda:
-                valorTotal += itens[5]
+            if aumentoValido == 'YES':
+                for itens in itensVenda:
+                    if itens[0] == int(valores[0]):
+                        itens[4] += 1
+                        itens[5] += float(valores[3])
 
-            inpValorTotal.delete(0, 'end')
-            inpValorTotal.insert(0, valorTotal)
+                valores[4] = int(valores[4]) + 1
+                valores[5] = float(valores[5]) + float(valores[3])
+                tabelaVenda.item(selected_items, values=(valores[0], valores[1], valores[2], valores[3], valores[4], valores[5]))
+
+                for itens in itensVenda:
+                    valorTotal += itens[5]
+
+                inpValorTotal.delete(0, 'end')
+                inpValorTotal.insert(0, valorTotal)
+
+            else:
+                Aviso.mostar_aviso("Sem quantidade em estoque!")
 
     def rem_qntd_item():
         """
@@ -719,6 +740,12 @@ def janela_vendas():
             if int(valores[4]) > 1:
                 for itens in itensVenda:
                     if itens[0] == int(valores[0]):
+                        for i, produtos in enumerate(produtoBanco):
+                            produtos = list(produtos)
+                            if produtos[1] == itens[1]:
+                                produtos[4] += 1
+                                produtoBanco[i] = tuple(produtos)
+
                         itens[4] -= 1
                         itens[5] -= float(valores[3])
 
@@ -727,6 +754,15 @@ def janela_vendas():
                 tabelaVenda.item(selected_items, values=(valores[0], valores[1], valores[2], valores[3], valores[4], valores[5]))
 
             else:
+                if int(valores[4]) > 0:
+                    for itens in itensVenda:
+                        if itens[0] == int(valores[0]):
+                            for i, produtos in enumerate(produtoBanco):
+                                produtos = list(produtos)
+                                if produtos[1] == itens[1]:
+                                    produtos[4] += 1
+                                    produtoBanco[i] = tuple(produtos)
+
                 for itens in itensVenda:
                     if itens[0] == int(valores[0]):
                         posicao = itensVenda.index(itens)
@@ -779,19 +815,34 @@ def janela_vendas():
             if produtoNovo == "YES":
                 itensVenda.append(lista)
 
-            tabelaVenda.delete(*tabelaVenda.get_children())
+            quantidadeValida = 'NO'
+            for i, produtos in enumerate(produtoBanco):
+                produtos = list(produtos)
+                if produtos[1] == codigo:
+                    reducaoQntd = produtos[4] - int(quantidade)
+                    if reducaoQntd >= 0:
+                        produtos[4] = reducaoQntd
+                        quantidadeValida = 'YES'
+                        produtoBanco[i] = tuple(produtos)
 
-            for id, cod, nome, preco, quantidade, total in itensVenda:
-                tabelaVenda.insert('', 'end', values=("{}".format(id), "{}".format(cod), "{}".format(nome), "{}".format(preco), "{}".format(quantidade), "{}".format(total)))
+            if quantidadeValida == 'YES':
+                tabelaBusca.delete(*tabelaBusca.get_children())
+                tabelaVenda.delete(*tabelaVenda.get_children())
 
-            inputCodVend.delete(0, 'end')
-            inputQntdVend.delete(0, 'end')
+                for id, cod, nome, preco, quantidade, total in itensVenda:
+                    tabelaVenda.insert('', 'end', values=("{}".format(id), "{}".format(cod), "{}".format(nome), "{}".format(preco), "{}".format(quantidade), "{}".format(total)))
 
-            for itens in itensVenda:
-                valorTotal += itens[5]
+                inputCodVend.delete(0, 'end')
+                inputQntdVend.delete(0, 'end')
 
-            inpValorTotal.delete(0, 'end')
-            inpValorTotal.insert(0, valorTotal)
+                for itens in itensVenda:
+                    valorTotal += itens[5]
+
+                inpValorTotal.delete(0, 'end')
+                inpValorTotal.insert(0, valorTotal)
+
+            else:
+                Aviso.mostar_aviso("Sem quantidade em estoque!")
 
         except tk.TclError as erro:
             print("Erro ao atualizar a tabela: {}".format(erro))
@@ -844,7 +895,7 @@ def janela_vendas():
 
         try:
             tabelaBusca.delete(*tabelaBusca.get_children())
-            produtoBanco = ProdutoRepository.read()
+
             categoriaBanco = CategoriaRepository.read()
             nomeCategProd = ''
 
@@ -870,7 +921,6 @@ def janela_vendas():
 
         try:
             tabelaBusca.delete(*tabelaBusca.get_children())
-            produtoBanco = ProdutoRepository.read()
             categoriaBanco = CategoriaRepository.read()
             nomeCategProd = ''
 
@@ -1060,7 +1110,7 @@ def janela_vendas():
                     pgtoJnl.destroy()
 
                 else:
-                    Aviso.mostar_aviso("ADICIONE UMA FORMA DE PAGAMENTO!")
+                    Aviso.mostar_aviso("Adicione a forma de pagamento!")
 
             btnFinalizar = tk.Button(pgtoJnl, text="Finalizar", command=finalizar_compra)
             btnFinalizar.configure(cursor="hand2", height=1, width=8, font=("Arial", 14))
