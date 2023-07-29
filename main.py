@@ -29,11 +29,11 @@ root.configure(bg="#2E4053")
 root.title("Controler")
 
 framControler = tk.Frame(root)
-framControler.config(bg="#000013")
+framControler.config(bg="#808080")
 framControler.pack(fill=tk.BOTH, padx=15, pady=15, expand=True)
 
 labOpMenu = tk.Label(framControler)
-labOpMenu.config(bg="#000013")
+labOpMenu.config(bg="#808080")
 labOpMenu.pack(expand=True)
 
 def janela_categorias():
@@ -57,15 +57,15 @@ def janela_categorias():
     categoiasJnl.title("Categorias")
 
     framCadCateg = tk.Frame(categoiasJnl)
-    framCadCateg.config(bg="#000013", height=600, width=1200)
+    framCadCateg.config(bg="#808080", height=600, width=1200)
     framCadCateg.pack(fill=tk.BOTH, padx=15, pady=15, expand=True)
 
     labCadCateg = tk.Label(framCadCateg)
-    labCadCateg.config(bg="#000013")
+    labCadCateg.config(bg="#808080")
     labCadCateg.pack(expand=True)
 
     labCadCategTitle = tk.Label(labCadCateg, text='CADASTRAR CATEGORIAS')
-    labCadCategTitle.config(bg="#000013", fg="white", font=("Arial", 20))
+    labCadCategTitle.config(bg="#808080", fg="white", font=("Arial", 20))
     labCadCategTitle.pack(padx=3, pady=20)
 
     '''
@@ -181,19 +181,19 @@ def janela_produtos():
     produtosJnl.title("Produtos")
 
     framCadProd = tk.Frame(produtosJnl)
-    framCadProd.config(bg="#000013", height=600, width=1200)
+    framCadProd.config(bg="#808080", height=600, width=1200)
     framCadProd.pack(fill=tk.BOTH, padx=15, pady=15, expand=True)
 
     labCadProd = tk.Label(framCadProd)
-    labCadProd.config(bg="#000013")
+    labCadProd.config(bg="#808080")
     labCadProd.pack(expand=True)
 
     labCadProdTitle = tk.Label(labCadProd, text='CADASTRAR PRODUTOS')
-    labCadProdTitle.config(bg="#000013", fg="white", font=("Arial", 20))
+    labCadProdTitle.config(bg="#808080", fg="white", font=("Arial", 20))
     labCadProdTitle.pack(padx=3, pady=10)
 
     labProd = tk.Label(labCadProd)
-    labProd.config(bg="#000013")
+    labProd.config(bg="#808080")
     labProd.pack(expand=True)
 
     '''
@@ -395,19 +395,19 @@ def janela_estoque():
     estoqueJnl.title("Produtos")
 
     framEstoque = tk.Frame(estoqueJnl)
-    framEstoque.config(bg="#000013", height=600, width=1200)
+    framEstoque.config(bg="#808080", height=600, width=1200)
     framEstoque.pack(fill=tk.BOTH, padx=15, pady=15, expand=True)
 
     labEstoque = tk.Label(framEstoque)
-    labEstoque.config(bg="#000013")
+    labEstoque.config(bg="#808080")
     labEstoque.pack(expand=True)
 
     labEstoqueTitle = tk.Label(labEstoque, text='Estoque')
-    labEstoqueTitle.config(bg="#000013", fg="white", font=("Arial", 20))
+    labEstoqueTitle.config(bg="#808080", fg="white", font=("Arial", 20))
     labEstoqueTitle.pack(padx=3, pady=10)
 
     labEstoq = tk.Label(labEstoque)
-    labEstoq.config(bg="#000013")
+    labEstoq.config(bg="#808080")
     labEstoq.pack(expand=True)
 
     '''
@@ -586,6 +586,13 @@ def janela_vendas():
         Abre uma nova janela para gerenciar as compras dos clientes.
     """
 
+    def atualizarPreco(novoPreco):
+        displayPrecoLab.config(text=str(novoPreco))
+        displayPreco.set(novoPreco)
+
+    def puxarPreco():
+        return displayPreco.get()
+
     vendasJnl = tk.Tk()
 
     largura_janela = 800
@@ -602,15 +609,15 @@ def janela_vendas():
     vendasJnl.title("Vendas")
 
     framVendas = tk.Frame(vendasJnl)
-    framVendas.config(bg="#000013")
+    framVendas.config(bg="#808080")
     framVendas.pack(fill=tk.BOTH, padx=15, pady=15, expand=True)
 
     labCadVendas = tk.Label(framVendas)
-    labCadVendas.config(bg="#000013")
+    labCadVendas.config(bg="#808080")
     labCadVendas.pack(expand=True)
 
     labVend = tk.Label(labCadVendas)
-    labVend.config(bg="#000013")
+    labVend.config(bg="#808080")
     labVend.pack(expand=True)
 
     produtoBanco = ProdutoRepository.read()
@@ -680,8 +687,7 @@ def janela_vendas():
             for itens in itensVenda:
                 valorTotal += itens[5]
 
-            inpValorTotal.delete(0, 'end')
-            inpValorTotal.insert(0, valorTotal)
+            atualizarPreco(valorTotal)
 
     btnRemItem = tk.Button(labRmvItem, text='Remover Produto', command=remover_da_compra)
     btnRemItem.config(cursor="hand2", height=1, width=15, font=("Arial", 14))
@@ -721,8 +727,7 @@ def janela_vendas():
                 for itens in itensVenda:
                     valorTotal += itens[5]
 
-                inpValorTotal.delete(0, 'end')
-                inpValorTotal.insert(0, valorTotal)
+                atualizarPreco(valorTotal)
 
             else:
                 Aviso.mostar_aviso("Sem quantidade em estoque!")
@@ -772,8 +777,7 @@ def janela_vendas():
             for itens in itensVenda:
                 valorTotal += itens[5]
 
-            inpValorTotal.delete(0, 'end')
-            inpValorTotal.insert(0, valorTotal)
+            atualizarPreco(valorTotal)
 
     btnAddQntdItem = tk.Button(labRmvItem, text='Add', command=add_qntd_item)
     btnAddQntdItem.config(cursor="hand2", width=5, font=("Arial", 14))
@@ -783,15 +787,18 @@ def janela_vendas():
     btnRemQntdItem.pack(side=tk.RIGHT, pady=10)
 
     labTotalVenda = tk.Label(labTabelaVenda)
-    labTotalVenda.config(bg="#000013")
+    labTotalVenda.config(bg="#595959")
     labTotalVenda.pack(side=tk.RIGHT, pady=20)
     labTotal = tk.Label(labTotalVenda, text="Total: R$")
-    labTotal.config(bg="#000013", fg="#ffffff", font=("Arial", 14))
+    labTotal.config(bg="#595959", fg="#ffffff", font=("Arial", 14))
     labTotal.pack(side=tk.LEFT, anchor=tk.W)
 
-    inpValorTotal = tk.Entry(labTotalVenda)
-    inpValorTotal.config(bg="#2E4053", fg="#ffffff", font=("Arial", 14), width=10)
-    inpValorTotal.pack(side=tk.RIGHT)
+    displayPreco = tk.StringVar()
+    displayPreco.set("0")
+
+    displayPrecoLab = tk.Label(labTotalVenda, text=displayPreco.get())
+    displayPrecoLab.config(bg="#ffffff", fg="#000000", font=("Arial", 16), width=10)
+    displayPrecoLab.pack(padx=20, pady=10)
 
     def adicionar_na_compra():
         """
@@ -838,8 +845,7 @@ def janela_vendas():
                 for itens in itensVenda:
                     valorTotal += itens[5]
 
-                inpValorTotal.delete(0, 'end')
-                inpValorTotal.insert(0, valorTotal)
+                atualizarPreco(str(valorTotal))
 
             else:
                 Aviso.mostar_aviso("Sem quantidade em estoque!")
@@ -990,7 +996,7 @@ def janela_vendas():
     '''
 
     labAdcVenda = tk.Label(labTabelaBusca)
-    labAdcVenda.configure(bg="#000013")
+    labAdcVenda.configure(bg="#595959")
     labAdcVenda.pack()
     btnAdcCompra = tk.Button(labAdcVenda, text='Adicionar na Compra', command=adicionar_na_compra, default="active")
     btnAdcCompra.config(cursor="hand2", height=1, width=25, font=("Arial", 14))
@@ -1001,7 +1007,7 @@ def janela_vendas():
             Abre uma nova janela para a finalização da compra.
         """
 
-        if inpValorTotal.get() != '':
+        if puxarPreco() != '':
             pgtoJnl = tk.Tk()
             largura_janela_pgtoJnl = 500
             altura_janela_pgtoJnl = 250
@@ -1014,9 +1020,9 @@ def janela_vendas():
 
             pgtoJnl.geometry(f"{largura_janela_pgtoJnl}x{altura_janela_pgtoJnl}+{pos_x_pgtoJnl}+{pos_y_pgtoJnl}")
             pgtoJnl.title("Pagamento")
-            pgtoJnl.configure(bg="#000013")
+            pgtoJnl.configure(bg="#808080")
 
-            labPag = tk.Label(pgtoJnl, text="Escolha a Forma de Pagamento:", font=("Arial", 14), fg="white", bg="#000013")
+            labPag = tk.Label(pgtoJnl, text="Escolha a Forma de Pagamento:", font=("Arial", 14), fg="white", bg="#808080")
             labPag.pack(pady=10)
 
             formPagBanco = FormasPagamentoRepository.read()
@@ -1032,7 +1038,7 @@ def janela_vendas():
             opFormPagCompra.pack(pady=10)
 
             labVerTroco = tk.Label(pgtoJnl)
-            labVerTroco.config(bg="#000013")
+            labVerTroco.config(bg="#808080")
             labVerTroco.pack(pady=20)
 
             def calcular_troco():
@@ -1042,7 +1048,7 @@ def janela_vendas():
 
                 try:
                     valorRecebido = inputRecb.get()
-                    valorDaCompra = inpValorTotal.get()
+                    valorDaCompra = puxarPreco()
                     valorDaCompra = str(valorDaCompra).replace(',', '.')
 
                     try:
@@ -1096,13 +1102,12 @@ def janela_vendas():
 
                 formaDePg = opFormPagCompra.get()
                 if formaDePg.strip() != '':
-                    total = float(inpValorTotal.get())
+                    total = float(puxarPreco())
                     Compra.finalizar_compra(total, itensVenda, formaDePg)
 
                     try:
                         tabelaVenda.delete(*tabelaVenda.get_children())
-                        inpValorTotal.delete(0, 'end')
-                        inpValorTotal.insert(0, 0.0)
+                        atualizarPreco(0)
 
                     except tk.TclError as erro:
                         print("Erro ao atualizar a tabela: {}".format(erro))
@@ -1175,11 +1180,11 @@ def janela_formaspgmt():
     framCadFormPag.pack(fill=tk.BOTH, padx=15, pady=15, expand=True)
 
     labCadFormPag = tk.Label(framCadFormPag)
-    labCadFormPag.config(bg="#000013")
+    labCadFormPag.config(bg="#808080")
     labCadFormPag.pack(expand=True)
 
     labCadFormPagTitle = tk.Label(labCadFormPag, text='CADASTRAR FORMAS DE PAGAMENTO')
-    labCadFormPagTitle.config(bg="#000013", fg="white", font=("Arial", 20))
+    labCadFormPagTitle.config(bg="#808080", fg="white", font=("Arial", 20))
     labCadFormPagTitle.pack(padx=3, pady=20)
 
     '''
@@ -1254,7 +1259,7 @@ def janela_formaspgmt():
                 Aviso.mostar_aviso("Erro ao excluir forma de pagamanto ")
 
     nomeFormPag = tk.Entry(labAdcFormPag)
-    nomeFormPag.config(fg="#000013", font=("Arial", 18))
+    nomeFormPag.config(fg="#808080", font=("Arial", 18))
     nomeFormPag.pack(padx=10, side=tk.LEFT)
 
     btnAdcFormPag = tk.Button(labAdcFormPag, text="Cadastrar", command=adc_formPag)
@@ -1289,7 +1294,7 @@ def janela_formaspgmt():
 '''
 
 labelOPTitle = tk.Label(labOpMenu, text='MENU')
-labelOPTitle.config(bg="#000013", fg="white", font=("Arial", 20))
+labelOPTitle.config(bg="#808080", fg="white", font=("Arial", 20))
 labelOPTitle.pack(padx=3, expand=True)
 
 btnOPCateg = tk.Button(labOpMenu, text='Categorias', command=janela_categorias)
